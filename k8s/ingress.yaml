@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ravenx-ingress
+  labels:
+    name: ravenx
+  annotations:
+    cert-manager.io/cluster-issuer: cluster-letsencrypt-prod
+    kubernetes.io/tls-acme: "true"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+      - ravenx.space
+      - www.ravenx.space
+      secretName: ravenx-tls
+  rules:
+  - host: ravenx.space
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: ravenx-url-web
+            port: 
+              number: 80
