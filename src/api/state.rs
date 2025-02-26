@@ -1,19 +1,19 @@
 use axum::extract::FromRef;
-use sqlx::PgPool;
+use crate::config::Config;
 
 #[derive(Clone, Debug)]
 pub struct AppState {
-    pub pool: PgPool,
+    pub config: Config
 }
 
 impl AppState {
-    pub fn new(pool: PgPool) -> Self {
-        Self { pool }
+    pub fn new(config: Config) -> Self {
+        Self { config }
     }
 }
 
-impl FromRef<AppState> for PgPool {
+impl FromRef<AppState> for Config {
     fn from_ref(input: &AppState) -> Self {
-        input.pool.clone()
+        input.config.clone()
     }
 }

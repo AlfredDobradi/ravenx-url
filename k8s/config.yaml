@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  config.yaml: |
+    verbose: false
+    urls:
+      finders-keepers:
+        url: https://ravenx.space/posts/2025-02-22_finders_keepers/
+      paints-and-dreams:
+        url: https://ravenx.space/posts/2025-02-23_four-target-painters-and-a-dream/
+      hooks-and-more:
+        url: https://ravenx.space/posts/2025-02-24_hooks-and-more/
