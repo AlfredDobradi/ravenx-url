@@ -1,12 +1,9 @@
-use axum::{
-    routing::get,
-    Router,
-};
-use tracing::{info, Level};
-use ravenx_url::{api, config};
-use tracing_subscriber::FmtSubscriber;
+use axum::{routing::get, Router};
 use clap::Parser;
 use ravenx_url::api::state::AppState;
+use ravenx_url::{api, config};
+use tracing::{info, Level};
+use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -14,17 +11,17 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let cfg = config::load_config(args.config_path)?;
 
+    let redis_client = redis::Client::open(cfg.redis.url.clone())?;
+
     let max_level = match args.verbose || cfg.verbose {
         true => Level::DEBUG,
         false => Level::INFO,
     };
-    let subscriber = FmtSubscriber::builder()
-        .with_max_level(max_level)
-        .finish();
+    let subscriber = FmtSubscriber::builder().with_max_level(max_level).finish();
 
-    let _ = tracing::subscriber::set_global_default(subscriber)?;
+    tracing::subscriber::set_global_default(subscriber)?;
 
-    let state = AppState::new(cfg);
+    let state = AppState::new(cfg, redis_client);
     let app = Router::new()
         .route("/{url_key}", get(api::handlers::handle_redirect))
         .with_state(state);

@@ -5,6 +5,8 @@ metadata:
 data:
   config.yaml: |
     verbose: false
+    redis:
+      url: redis://redict-svc:6379/
     urls:
       finders-keepers:
         url: https://ravenx.space/posts/2025-02-22_finders_keepers/

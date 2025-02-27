@@ -9,6 +9,7 @@ pub enum ApiError {
     InternalServerError(anyhow::Error),
     StatusCode(StatusCode),
     UuidParseError(uuid::Error),
+    RedisError(redis::RedisError),
 }
 
 impl From<anyhow::Error> for ApiError {
@@ -29,6 +30,12 @@ impl From<uuid::Error> for ApiError {
     }
 }
 
+impl From<redis::RedisError> for ApiError {
+    fn from(err: redis::RedisError) -> Self {
+        ApiError::RedisError(err)
+    }
+}
+
 impl Display for ApiError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -39,6 +46,9 @@ impl Display for ApiError {
                 write!(f, "{}", code)
             }
             ApiError::UuidParseError(rejection) => {
+                write!(f, "{}", rejection)
+            }
+            ApiError::RedisError(rejection) => {
                 write!(f, "{}", rejection)
             }
         }
@@ -52,7 +62,6 @@ impl IntoResponse for ApiError {
         struct ErrorResponse {
             message: String,
         }
-
         let (status, message) = match self {
             ApiError::InternalServerError(rejection) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_string())
@@ -64,6 +73,9 @@ impl IntoResponse for ApiError {
                     .to_string(),
             ),
             ApiError::UuidParseError(rejection) => {
+                (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_string())
+            }
+            ApiError::RedisError(rejection) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_string())
             }
         };
