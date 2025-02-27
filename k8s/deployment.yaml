@@ -13,14 +13,19 @@ spec:
     spec:
       containers:
         - name: redict
-          image: registry.redict.io/redict:latest
+          image: registry.redict.io/redict:bookworm
+          command:
+            - "redict-server"
+            - "/etc/redict/redict.conf"
           resources:
             limits:
               memory: "512Mi"
               cpu: "500m"
           volumeMounts:
-            - mountPath: "/data"
+            - mountPath: "/var/data"
               name: redict-pvc
+            - mountPath: "/etc/redict"
+              name: redict-config
           ports:
             - containerPort: 6379
         - name: ravenx-url-nginx
@@ -40,10 +45,15 @@ spec:
             - name: config
               mountPath: "/etc/ravenx"
               readOnly: true
+      securityContext:
+        fsGroup: 999
       volumes:
         - name: config
           configMap:
             name: app-config
+        - name: redict-config
+          configMap:
+            name: redict-config
         - name: redict-pvc
           persistentVolumeClaim:
             claimName: ravenx-url-redis-claim
