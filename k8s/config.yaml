@@ -6,4 +6,11 @@ data:
   config.yaml: |
     verbose: false
     redis:
-      url: redis://redict:6379/
+      url: redis://redict-svc:6379/
+    urls:
+      finders-keepers:
+        url: https://ravenx.space/posts/2025-02-22_finders_keepers/
+      paints-and-dreams:
+        url: https://ravenx.space/posts/2025-02-23_four-target-painters-and-a-dream/
+      hooks-and-more:
+        url: https://ravenx.space/posts/2025-02-24_hooks-and-more/

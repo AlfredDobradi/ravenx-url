@@ -21,8 +21,10 @@ spec:
           volumeMounts:
             - mountPath: "/data"
               name: redict-pvc
+          ports:
+            - containerPort: 6379
         - name: ravenx-url-nginx
-          image: ghcr.io/alfreddobradi/ravenx-url:v1.0.1
+          image: ghcr.io/alfreddobradi/ravenx-url:v1.1.0-pre.1
           command:
             - 'ravenx'
             - '--config-path'
