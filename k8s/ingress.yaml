@@ -11,11 +11,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-      - ravenx.space
-      - www.ravenx.space
-      secretName: ravenx-tls
+      - sh.ravenx.space
+      secretName: ravenx-url-tls
   rules:
-  - host: ravenx.space
+  - host: sh.ravenx.space
     http:
       paths:
       - pathType: Prefix

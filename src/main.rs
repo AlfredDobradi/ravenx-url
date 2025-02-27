@@ -29,7 +29,7 @@ async fn main() -> Result<(), anyhow::Error> {
         .route("/{url_key}", get(api::handlers::handle_redirect))
         .with_state(state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000").await?;
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;
     info!("listening on {}", listener.local_addr()?);
     axum::serve(listener, app).await?;
 

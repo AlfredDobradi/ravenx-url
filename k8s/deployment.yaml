@@ -13,18 +13,20 @@ spec:
     spec:
       containers:
         - name: ravenx-url-nginx
-          image: ghcr.io/alfreddobradi/ravenx:v1.2.1
+          image: ghcr.io/alfreddobradi/ravenx-url:v1.0.1
           command:
-            -
+            - 'ravenx'
+            - '--config-path'
+            - '/etc/ravenx/config.yaml'
           imagePullPolicy: Always
           resources:
             limits:
               memory: "128Mi"
               cpu: "500m"
           ports:
-          - containerPort: 80
+          - containerPort: 3000
           volumeMounts:
-            - name: foo
+            - name: config
               mountPath: "/etc/ravenx"
               readOnly: true
       volumes:
