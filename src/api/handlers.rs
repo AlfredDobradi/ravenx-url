@@ -3,11 +3,8 @@ use axum::http::header::LOCATION;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use redis::Commands;
-use tokio::io::AsyncReadExt;
-use tracing::{debug, info};
+use tracing::debug;
 use crate::api::error::ApiError;
-use crate::api::state::AppState;
-use crate::config::Config;
 
 pub async fn handle_redirect(
     State(redis): State<redis::Client>,

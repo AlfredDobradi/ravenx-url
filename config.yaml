@@ -2,3 +2,5 @@ verbose: false
 urls:
   test:
     url: https://google.com
+redis:
+  url: redis://127.0.0.1:6379

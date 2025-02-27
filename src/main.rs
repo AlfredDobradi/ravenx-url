@@ -14,7 +14,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     let cfg = config::load_config(args.config_path)?;
 
-    let redis_client = redis::Client::open(cfg.redis.url)?;
+    let redis_client = redis::Client::open(cfg.redis.url.clone())?;
 
     let max_level = match args.verbose || cfg.verbose {
         true => Level::DEBUG,
