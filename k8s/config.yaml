@@ -14,3 +14,13 @@ data:
         url: https://ravenx.space/posts/2025-02-23_four-target-painters-and-a-dream/
       hooks-and-more:
         url: https://ravenx.space/posts/2025-02-24_hooks-and-more/
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redict-config
+data:
+  redict.conf: |
+    dir /var/data
+    appendonly yes
+    loglevel verbose
