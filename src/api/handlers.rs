@@ -1,14 +1,14 @@
+use crate::api::error::ApiError;
 use axum::extract::{Path, State};
 use axum::http::header::LOCATION;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use redis::Commands;
 use tracing::debug;
-use crate::api::error::ApiError;
 
 pub async fn handle_redirect(
     State(redis): State<redis::Client>,
-    Path(url_key): Path<String>
+    Path(url_key): Path<String>,
 ) -> Result<impl IntoResponse, ApiError> {
     let mut con = redis.get_connection()?;
 

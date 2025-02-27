@@ -1,6 +1,6 @@
+use crate::config::Config;
 use axum::extract::FromRef;
 use redis::Client;
-use crate::config::Config;
 
 #[derive(Clone, Debug)]
 pub struct AppState {

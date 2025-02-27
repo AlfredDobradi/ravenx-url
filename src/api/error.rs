@@ -74,7 +74,7 @@ impl IntoResponse for ApiError {
             ),
             ApiError::UuidParseError(rejection) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_string())
-            },
+            }
             ApiError::RedisError(rejection) => {
                 (StatusCode::INTERNAL_SERVER_ERROR, rejection.to_string())
             }
