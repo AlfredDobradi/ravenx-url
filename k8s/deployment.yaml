@@ -12,6 +12,15 @@ spec:
         app: ravenx-url
     spec:
       containers:
+        - name: redict
+          image: registry.redict.io/redict:latest
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - mountPath: "/data"
+              name: redict-pvc
         - name: ravenx-url-nginx
           image: ghcr.io/alfreddobradi/ravenx-url:v1.0.1
           command:
@@ -33,3 +42,6 @@ spec:
         - name: config
           configMap:
             name: app-config
+        - name: redict-pvc
+          persistentVolumeClaim:
+            claimName: ravenx-url-redis-claim
