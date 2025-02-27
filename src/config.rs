@@ -4,6 +4,11 @@ use clap::Parser;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize, Clone)]
+pub struct Redis {
+    pub url: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
 pub struct Config {
     #[serde(default)]
     pub verbose: bool,

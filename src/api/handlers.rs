@@ -2,17 +2,22 @@ use axum::extract::{Path, State};
 use axum::http::header::LOCATION;
 use axum::http::StatusCode;
 use axum::response::IntoResponse;
-use tracing::debug;
+use redis::Commands;
+use tokio::io::AsyncReadExt;
+use tracing::{debug, info};
 use crate::api::error::ApiError;
+use crate::api::state::AppState;
 use crate::config::Config;
 
 pub async fn handle_redirect(
-    State(config): State<Config>,
+    State(redis): State<redis::Client>,
     Path(url_key): Path<String>
 ) -> Result<impl IntoResponse, ApiError> {
-    if let Some(u) = config.urls.get(&url_key) {
-        debug!("{}", format!("redirecting path /{} to {}", url_key, &u.url));
-        Ok((StatusCode::TEMPORARY_REDIRECT, [(LOCATION, u.url.clone())], "").into_response())
+    let mut con = redis.get_connection()?;
+
+    if let Ok(u) = con.get::<&String, String>(&url_key) {
+        debug!("{}", format!("redirecting path /{} to {}", url_key, u));
+        Ok((StatusCode::TEMPORARY_REDIRECT, [(LOCATION, u)], "").into_response())
     } else {
         debug!("{}", format!("path /{} not found", url_key));
         Err(ApiError::StatusCode(StatusCode::NOT_FOUND))
