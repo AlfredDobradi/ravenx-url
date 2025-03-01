@@ -133,7 +133,7 @@ impl Connection {
         if !force
             && self
                 .c
-                .hget::<String, String, UrlItem>(item_key.clone(), "url".to_string())
+                .hget::<String, String, String>(item_key.clone(), "url".to_string())
                 .is_ok()
         {
             error!("key {} already exists", item_key);

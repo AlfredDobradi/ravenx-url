@@ -1,4 +1,4 @@
-name: Docker
+name: Docker publish
 
 on:
   push:
@@ -11,7 +11,16 @@ env:
 
 
 jobs:
-  build:
+  validate:
+
+    runs-on: ubuntu-latest
+    steps:
+      -
+        uses: ./build.yaml
+        with:
+          with-build: false
+
+  publish:
 
     runs-on: ubuntu-latest
     permissions:

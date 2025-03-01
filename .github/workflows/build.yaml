@@ -3,10 +3,11 @@ name: Test and Build
 on:
   pull_request:
   workflow_dispatch:
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  workflow_call:
+    inputs:
+        with-build:
+            type: boolean
+            default: true
 
 jobs:
   build:
