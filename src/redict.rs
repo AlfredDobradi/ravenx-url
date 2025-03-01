@@ -1,5 +1,6 @@
 use crate::api::error::ApiError;
 use axum::http::StatusCode;
+use clap::error;
 use redis::{
     Commands, Connection as RedictConnection, ErrorKind, FromRedisValue, RedisError, RedisResult,
     Value,
@@ -130,11 +131,9 @@ impl Connection {
         self.c
             .sadd::<String, String, ()>(list_key.clone(), item_key.clone())?;
 
-        if !force
-            && self
-                .c
-                .hget::<String, String, UrlItem>(item_key.clone(), "url".to_string())
-                .is_ok()
+        if !force && self
+        .c
+        .hget::<String, String, String>(item_key.clone(), "url".to_string()).is_ok()
         {
             error!("key {} already exists", item_key);
             return Err(ApiError::StatusCode(StatusCode::CONFLICT));

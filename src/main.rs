@@ -1,6 +1,5 @@
 use axum::{
-    routing::{get, post, put},
-    Router,
+    middleware, routing::{get, post, put}, Router
 };
 use clap::Parser;
 use ravenx_url::api::state::AppState;
@@ -25,12 +24,16 @@ async fn main() -> Result<(), anyhow::Error> {
     tracing::subscriber::set_global_default(subscriber)?;
 
     let state = AppState::new(cfg, redis_client);
+
+    let auth_routes = Router::new()
+        .route("/{url_key}", post(api::handlers::handle_post))
+        .route("/{url_key}", put(api::handlers::handle_put))
+        .layer(middleware::from_fn_with_state(state.clone(), api::middleware::auth_middleware));
+
     let app = Router::new()
         .route("/", get(api::handlers::handle_index))
         .route("/{url_key}", get(api::handlers::handle_redirect))
-        // Comment out until auth is done
-        .route("/{url_key}", post(api::handlers::handle_post))
-        .route("/{url_key}", put(api::handlers::handle_put))
+        .merge(auth_routes)
         .with_state(state);
 
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await?;

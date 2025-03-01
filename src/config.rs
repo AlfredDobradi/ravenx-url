@@ -6,6 +6,7 @@ use std::fs;
 pub struct Config {
     #[serde(default)]
     pub verbose: bool,
+    pub auth_token: String,
     pub redis: Redis,
 }
 
