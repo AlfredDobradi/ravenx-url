@@ -97,7 +97,7 @@ impl Connection {
         if !force
             && self
                 .c
-                .hget::<String, String, ()>(item_key.clone(), "url".to_string())
+                .hget::<String, String, UrlItem>(item_key.clone(), "url".to_string())
                 .is_ok()
         {
             return Err(ApiError::StatusCode(StatusCode::CONFLICT));
