@@ -1,7 +1,10 @@
-use axum::{
-    body::Body, extract::{Request, State}, http::{header::AUTHORIZATION, HeaderMap, HeaderValue, Response, StatusCode}, middleware::Next,
-};
 use crate::config::Config;
+use axum::{
+    body::Body,
+    extract::{Request, State},
+    http::{header::AUTHORIZATION, HeaderMap, HeaderValue, Response, StatusCode},
+    middleware::Next,
+};
 
 #[tracing::instrument]
 pub async fn auth_middleware(

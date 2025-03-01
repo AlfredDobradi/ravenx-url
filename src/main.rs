@@ -1,5 +1,7 @@
 use axum::{
-    middleware, routing::{get, post, put}, Router
+    middleware,
+    routing::{get, post, put},
+    Router,
 };
 use clap::Parser;
 use ravenx_url::api::state::AppState;
@@ -28,7 +30,10 @@ async fn main() -> Result<(), anyhow::Error> {
     let auth_routes = Router::new()
         .route("/{url_key}", post(api::handlers::handle_post))
         .route("/{url_key}", put(api::handlers::handle_put))
-        .layer(middleware::from_fn_with_state(state.clone(), api::middleware::auth_middleware));
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            api::middleware::auth_middleware,
+        ));
 
     let app = Router::new()
         .route("/", get(api::handlers::handle_index))
