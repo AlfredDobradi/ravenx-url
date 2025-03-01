@@ -29,7 +29,7 @@ spec:
           ports:
             - containerPort: 6379
         - name: ravenx-url-nginx
-          image: ghcr.io/alfreddobradi/ravenx-url:v1.1.0
+          image: ghcr.io/alfreddobradi/ravenx-url:v1.2.0
           command:
             - 'ravenx'
             - '--config-path'
