@@ -1,15 +1,49 @@
 use crate::api::error::ApiError;
 use crate::redict::Connection;
 use axum::extract::{Path, Query, State};
-use axum::http::header::LOCATION;
-use axum::http::StatusCode;
+use axum::http::header::{self, LOCATION};
+use axum::http::{HeaderMap, StatusCode};
 use axum::response::IntoResponse;
 use std::collections::HashMap;
 use std::string::ToString;
 use tracing::debug;
 
-static KEY_VERSION: &str = "1";
+static KEY_VERSION: &str = "2";
 
+#[tracing::instrument]
+pub async fn handle_index(
+    State(redis): State<redis::Client>,
+    headers: HeaderMap,
+) -> Result<impl IntoResponse, ApiError> {
+    let accept: &str = match headers.get(header::ACCEPT) {
+        Some(a) => match a.to_str().unwrap_or("text/plain") {
+            "application/json" => "application/json",
+            _ => "text/plain",
+        },
+        None => "text/plain",
+    };
+
+    let mut con = Connection::from((redis.get_connection()?, KEY_VERSION.to_string()));
+
+    let list = con.get_items()?;
+
+    match accept {
+        "application/json" => Ok((
+            StatusCode::OK,
+            [("Content-Type", "application/json")],
+            serde_json::to_string(&list).unwrap(),
+        )),
+        _ => Ok((
+            StatusCode::OK,
+            [("Content-Type", "text/plain")],
+            list.iter().fold("".to_string(), |str, url| {
+                format!("{}\n{} -> {}", str, url.key, url.url)
+            }),
+        )),
+    }
+}
+
+#[tracing::instrument]
 pub async fn handle_redirect(
     State(redis): State<redis::Client>,
     Path(url_key): Path<String>,
@@ -25,6 +59,7 @@ pub async fn handle_redirect(
     }
 }
 
+#[tracing::instrument]
 pub async fn handle_post(
     State(redis): State<redis::Client>,
     Path(url_key): Path<String>,
@@ -40,6 +75,7 @@ pub async fn handle_post(
     Ok(StatusCode::CREATED)
 }
 
+#[tracing::instrument]
 pub async fn handle_put(
     State(redis): State<redis::Client>,
     Path(url_key): Path<String>,
