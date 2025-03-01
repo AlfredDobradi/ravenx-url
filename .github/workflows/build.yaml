@@ -1,0 +1,32 @@
+name: Test and Build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - 
+        name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Clippy and lint
+        run: |
+          cargo clippy -- -Dwarnings
+          cargo fmt --check --verbose
+      -
+        name: Test
+        run: cargo test --verbose
+      - 
+        name: Build
+        run: cargo build --verbose
+      
