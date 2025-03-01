@@ -13,18 +13,14 @@ static KEY_VERSION: &str = "2";
 #[tracing::instrument]
 pub async fn handle_index(
     State(redis): State<redis::Client>,
-    headers: HeaderMap
+    headers: HeaderMap,
 ) -> Result<impl IntoResponse, ApiError> {
     let accept: &str = match headers.get(header::ACCEPT) {
-        Some(a) => {
-            match a.to_str().unwrap_or("text/plain") {
-                "application/json" => "application/json",
-                _ => "text/plain"
-            }
+        Some(a) => match a.to_str().unwrap_or("text/plain") {
+            "application/json" => "application/json",
+            _ => "text/plain",
         },
-        None => {
-            "text/plain"
-        }
+        None => "text/plain",
     };
 
     let mut con = Connection::from((redis.get_connection()?, KEY_VERSION.to_string()));
@@ -32,20 +28,18 @@ pub async fn handle_index(
     let list = con.get_items()?;
 
     match accept {
-        "application/json" => {
-            Ok((
-                StatusCode::OK,
-                [("Content-Type", "application/json")],
-                serde_json::to_string(&list).unwrap(),
-            ))
-        },
-        _ => {
-            Ok((
-                StatusCode::OK,
-                [("Content-Type", "text/plain")],
-                list.iter().fold("".to_string(), |str, (_key, url)| format!("{}\n{} -> {}", str, url.key, url.url)),
-            ))
-        }
+        "application/json" => Ok((
+            StatusCode::OK,
+            [("Content-Type", "application/json")],
+            serde_json::to_string(&list).unwrap(),
+        )),
+        _ => Ok((
+            StatusCode::OK,
+            [("Content-Type", "text/plain")],
+            list.iter().fold("".to_string(), |str, url| {
+                format!("{}\n{} -> {}", str, url.key, url.url)
+            }),
+        )),
     }
 }
 

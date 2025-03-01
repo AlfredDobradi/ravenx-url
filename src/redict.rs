@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use crate::api::error::ApiError;
 use axum::http::StatusCode;
 use redis::{
@@ -6,6 +5,7 @@ use redis::{
     Value,
 };
 use serde::Serialize;
+use std::vec;
 use tracing::{error, info};
 
 pub type UrlList = Vec<String>;
@@ -107,16 +107,16 @@ impl Connection {
     }
 
     #[tracing::instrument]
-    pub fn get_items(&mut self) -> Result<HashMap<String, UrlItem>, ApiError> {
+    pub fn get_items(&mut self) -> Result<Vec<UrlItem>, ApiError> {
         let list_key = format!("url:{}:list", self.version);
         let list: Vec<String> = self.c.smembers(&list_key)?;
 
-        let mut items: HashMap<String, UrlItem> = HashMap::new();
+        let mut items: Vec<UrlItem> = vec![];
 
         for key in list {
             let item: UrlItem = self.c.hgetall(&key)?;
 
-            items.insert(key, item);
+            items.push(item);
         }
 
         Ok(items)
@@ -143,7 +143,7 @@ impl Connection {
         self.c.hset_multiple::<&String, String, &String, ()>(
             &item_key,
             &[
-                ("key".to_string(), &key),
+                ("key".to_string(), key),
                 ("url".to_string(), &value),
                 ("hits".to_string(), &"0".to_string()),
             ],

@@ -1,4 +1,7 @@
-use axum::{routing::{get, post, put}, Router};
+use axum::{
+    routing::{get, post, put},
+    Router,
+};
 use clap::Parser;
 use ravenx_url::api::state::AppState;
 use ravenx_url::{api, config};
