@@ -12,16 +12,9 @@ env:
 
 jobs:
   validate:
-
-    runs-on: ubuntu-latest
-    steps:
-      - 
-        name: Checkout repository
-        uses: actions/checkout@v4
-      -
-        uses: alfreddobradi/ravenx-url/.github/workflows/build.yaml@main
-        with:
-          with-build: false
+    uses: alfreddobradi/ravenx-url/.github/workflows/build.yaml@main
+    with:
+      with-build: false
 
   publish:
 
