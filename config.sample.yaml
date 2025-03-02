@@ -1,7 +1,5 @@
 verbose: true
 auth_token: test_token
-urls:
-  test:
-    url: https://google.com
+key_version: 1
 redis:
   url: redis://127.0.0.1:6379

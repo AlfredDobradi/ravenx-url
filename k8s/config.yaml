@@ -5,6 +5,8 @@ metadata:
 data:
   config.yaml: |
     verbose: false
+    auth_token: test_token
+    key_version: 1
     redis:
       url: redis://redict-svc:6379/
     urls:
