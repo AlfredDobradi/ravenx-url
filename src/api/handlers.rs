@@ -37,7 +37,7 @@ pub async fn handle_index(
             StatusCode::OK,
             [("Content-Type", "text/plain")],
             list.iter().fold("".to_string(), |str, url| {
-                format!("{}\n{} -> {}", str, url.key, url.url)
+                format!("{}{} -> {}\n", str, url.key, url.url)
             }),
         )),
     }
