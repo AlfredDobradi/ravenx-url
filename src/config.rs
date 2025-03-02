@@ -7,6 +7,7 @@ pub struct Config {
     #[serde(default)]
     pub verbose: bool,
     pub auth_token: String,
+    pub key_version: String,
     pub redis: Redis,
 }
 
