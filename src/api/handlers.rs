@@ -51,6 +51,8 @@ pub async fn handle_redirect(
     let mut con = Connection::from((redis.get_connection()?, KEY_VERSION.to_string()));
 
     if let Ok(u) = con.get_item(&url_key) {
+        con.increase_hits(&url_key)?;
+
         debug!("{}", format!("redirecting path /{} to {}", url_key, u.url));
         Ok((StatusCode::TEMPORARY_REDIRECT, [(LOCATION, u.url)], "").into_response())
     } else {

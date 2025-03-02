@@ -152,4 +152,23 @@ impl Connection {
         info!("added key {} with value {}", item_key, value);
         Ok(())
     }
+
+    #[tracing::instrument]
+    pub fn increase_hits(&mut self, key: &String) -> Result<(), ApiError> {
+        let item_key = format!("url:{}:{}", self.version, key);
+
+        let hits: u64 = self
+            .c
+            .hget::<String, String, String>(item_key.clone(), "hits".to_string())?
+            .parse()
+            .unwrap_or_default();
+
+        self.c.hset::<String, String, String, String>(
+            item_key.clone(),
+            "hits".to_string(),
+            (hits + 1).to_string(),
+        )?;
+
+        Ok(())
+    }
 }
