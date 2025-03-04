@@ -4,10 +4,9 @@ use axum::{
     Router,
 };
 use clap::Parser;
-use ravenx_url::api::state::AppState;
 use ravenx_url::{api, config};
+use ravenx_url::{api::state::AppState, instrumentation};
 use tracing::{info, Level};
-use tracing_subscriber::FmtSubscriber;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
@@ -21,9 +20,7 @@ async fn main() -> Result<(), anyhow::Error> {
         true => Level::DEBUG,
         false => Level::INFO,
     };
-    let subscriber = FmtSubscriber::builder().with_max_level(max_level).finish();
-
-    tracing::subscriber::set_global_default(subscriber)?;
+    instrumentation::init_tracing_subscriber(max_level)?;
 
     let state = AppState::new(cfg, redis_client);
 
