@@ -1,5 +1,5 @@
 use opentelemetry::{global, trace::TracerProvider as _, KeyValue};
-use opentelemetry_otlp::WithExportConfig;
+use opentelemetry_otlp::{Protocol, WithExportConfig};
 use opentelemetry_sdk::trace::Tracer;
 use opentelemetry_sdk::{
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
@@ -33,6 +33,7 @@ fn init_tracer(endpoint: String) -> Result<Tracer, anyhow::Error> {
     let exporter = opentelemetry_otlp::SpanExporter::builder()
         .with_tonic()
         .with_endpoint(endpoint)
+        .with_protocol(Protocol::Grpc)
         .build()?;
 
     let provider = SdkTracerProvider::builder()
@@ -48,12 +49,12 @@ fn init_tracer(endpoint: String) -> Result<Tracer, anyhow::Error> {
 
 // Initialize tracing-subscriber and return OtelGuard for opentelemetry-related termination processing
 pub fn init_tracing_subscriber(config: &Config, level: Level) -> Result<(), anyhow::Error> {
-    let tracer = init_tracer(
-        config
-            .clone()
-            .otlp_endpoint
-            .unwrap_or("http://localhost:4317".to_string()),
-    )?;
+    let endpoint = config
+        .clone()
+        .otlp_endpoint
+        .unwrap_or("http://localhost:4317".to_string());
+
+    let tracer = init_tracer(endpoint)?;
 
     let int = tracing_subscriber::registry()
         .with(tracing_subscriber::filter::LevelFilter::from_level(level))

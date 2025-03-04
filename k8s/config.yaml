@@ -4,10 +4,10 @@ metadata:
   name: app-config
 data:
   config.yaml: |
-    verbose: false
+    verbose: true
     auth_token: test_token
     key_version: 1
-    otel_endpoint: http://jaeger-svc:4317
+    otlp_endpoint: http://jaeger-svc:4317
     redis:
       url: redis://redict-svc:6379/
 ---
