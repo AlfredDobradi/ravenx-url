@@ -1,4 +1,5 @@
 use opentelemetry::{global, trace::TracerProvider as _, KeyValue};
+use opentelemetry_otlp::WithExportConfig;
 use opentelemetry_sdk::trace::Tracer;
 use opentelemetry_sdk::{
     trace::{RandomIdGenerator, Sampler, SdkTracerProvider},
@@ -11,6 +12,8 @@ use opentelemetry_semantic_conventions::{
 use tracing_core::Level;
 use tracing_opentelemetry::OpenTelemetryLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+use crate::config::Config;
 
 fn resource() -> Resource {
     Resource::builder()
@@ -26,9 +29,10 @@ fn resource() -> Resource {
 }
 
 // Construct Tracer for OpenTelemetryLayer
-fn init_tracer() -> Result<Tracer, anyhow::Error> {
+fn init_tracer(endpoint: String) -> Result<Tracer, anyhow::Error> {
     let exporter = opentelemetry_otlp::SpanExporter::builder()
         .with_tonic()
+        .with_endpoint(endpoint)
         .build()?;
 
     let provider = SdkTracerProvider::builder()
@@ -43,14 +47,19 @@ fn init_tracer() -> Result<Tracer, anyhow::Error> {
 }
 
 // Initialize tracing-subscriber and return OtelGuard for opentelemetry-related termination processing
-pub fn init_tracing_subscriber(level: Level, export: bool) -> Result<(), anyhow::Error> {
-    let tracer = init_tracer()?;
+pub fn init_tracing_subscriber(config: &Config, level: Level) -> Result<(), anyhow::Error> {
+    let tracer = init_tracer(
+        config
+            .clone()
+            .otlp_endpoint
+            .unwrap_or("http://localhost:4317".to_string()),
+    )?;
 
     let int = tracing_subscriber::registry()
         .with(tracing_subscriber::filter::LevelFilter::from_level(level))
         .with(tracing_subscriber::fmt::layer());
 
-    if export {
+    if config.otlp_endpoint.is_some() {
         int.with(OpenTelemetryLayer::new(tracer)).init();
     } else {
         int.init();
