@@ -60,6 +60,7 @@ pub fn init_tracing_subscriber(config: &Config, level: Level) -> Result<(), anyh
         .with(tracing_subscriber::fmt::layer());
 
     if config.otlp_endpoint.is_some() {
+        tracing::debug!("initializing OpenTelemetry tracing export layer");
         int.with(OpenTelemetryLayer::new(tracer)).init();
     } else {
         int.init();
