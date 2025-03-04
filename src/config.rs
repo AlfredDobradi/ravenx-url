@@ -8,6 +8,7 @@ pub struct Config {
     pub verbose: bool,
     pub auth_token: String,
     pub key_version: String,
+    pub otlp_endpoint: Option<String>,
     pub redis: Redis,
 }
 

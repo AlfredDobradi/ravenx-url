@@ -12,6 +12,16 @@ spec:
         app: ravenx-url
     spec:
       containers:
+        - name: jaeger
+          image: jaegertracing/all-in-one:latest
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 16686
+            - containerPort: 4317
+            - containerPort: 4318
         - name: redict
           image: registry.redict.io/redict:bookworm
           command:
@@ -29,7 +39,7 @@ spec:
           ports:
             - containerPort: 6379
         - name: ravenx-url-nginx
-          image: ghcr.io/alfreddobradi/ravenx-url:v1.4.0
+          image: ghcr.io/alfreddobradi/ravenx-url:v1.5.0-pre.1
           command:
             - 'ravenx'
             - '--config-path'
