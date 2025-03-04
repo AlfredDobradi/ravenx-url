@@ -7,15 +7,9 @@ data:
     verbose: false
     auth_token: test_token
     key_version: 1
+    otel_endpoint: http://jaeger-svc:4317
     redis:
       url: redis://redict-svc:6379/
-    urls:
-      finders-keepers:
-        url: https://ravenx.space/posts/2025-02-22_finders_keepers/
-      paints-and-dreams:
-        url: https://ravenx.space/posts/2025-02-23_four-target-painters-and-a-dream/
-      hooks-and-more:
-        url: https://ravenx.space/posts/2025-02-24_hooks-and-more/
 ---
 apiVersion: v1
 kind: ConfigMap
