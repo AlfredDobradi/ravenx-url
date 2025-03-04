@@ -8,6 +8,7 @@ pub struct Config {
     pub verbose: bool,
     pub auth_token: String,
     pub key_version: String,
+    pub export_traces: bool,
     pub redis: Redis,
 }
 

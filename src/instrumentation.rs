@@ -43,14 +43,18 @@ fn init_tracer() -> Result<Tracer, anyhow::Error> {
 }
 
 // Initialize tracing-subscriber and return OtelGuard for opentelemetry-related termination processing
-pub fn init_tracing_subscriber(level: Level) -> Result<(), anyhow::Error> {
+pub fn init_tracing_subscriber(level: Level, export: bool) -> Result<(), anyhow::Error> {
     let tracer = init_tracer()?;
 
-    tracing_subscriber::registry()
+    let int = tracing_subscriber::registry()
         .with(tracing_subscriber::filter::LevelFilter::from_level(level))
-        .with(tracing_subscriber::fmt::layer())
-        .with(OpenTelemetryLayer::new(tracer))
-        .init();
+        .with(tracing_subscriber::fmt::layer());
+
+    if export {
+        int.with(OpenTelemetryLayer::new(tracer)).init();
+    } else {
+        int.init();
+    }
 
     Ok(())
 }

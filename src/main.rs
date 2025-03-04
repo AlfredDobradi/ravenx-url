@@ -20,7 +20,7 @@ async fn main() -> Result<(), anyhow::Error> {
         true => Level::DEBUG,
         false => Level::INFO,
     };
-    instrumentation::init_tracing_subscriber(max_level)?;
+    instrumentation::init_tracing_subscriber(max_level, cfg.export_traces)?;
 
     let state = AppState::new(cfg, redis_client);
 
