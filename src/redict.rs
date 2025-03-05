@@ -6,7 +6,7 @@ use redis::{
 };
 use serde::Serialize;
 use std::vec;
-use tracing::{error, info};
+use tracing::{error, info, Level};
 
 pub type UrlList = Vec<String>;
 
@@ -92,7 +92,13 @@ impl Connection {
     #[tracing::instrument]
     pub fn get_list(&mut self) -> Result<Vec<String>, ApiError> {
         let list_key = format!("url:{}:list", self.version);
+
+        tracing::event!(Level::INFO, redict_key = list_key);
         let list: Vec<String> = self.c.smembers(list_key)?;
+        tracing::event!(
+            Level::DEBUG,
+            list = serde_json::to_string(&list).unwrap_or("[]".to_string())
+        );
 
         Ok(list)
     }
@@ -101,7 +107,12 @@ impl Connection {
     pub fn get_item(&mut self, key: &String) -> Result<UrlItem, ApiError> {
         let item_key = format!("url:{}:{}", self.version, key);
 
+        tracing::event!(Level::INFO, raw_key = key, redict_key = item_key);
         let item: UrlItem = self.c.hgetall(item_key)?;
+        tracing::event!(
+            Level::DEBUG,
+            item = serde_json::to_string(&item).unwrap_or("{}".to_string())
+        );
 
         Ok(item)
     }
@@ -109,6 +120,7 @@ impl Connection {
     #[tracing::instrument]
     pub fn get_items(&mut self) -> Result<Vec<UrlItem>, ApiError> {
         let list_key = format!("url:{}:list", self.version);
+        tracing::event!(Level::DEBUG, redict_key = list_key);
         let list: Vec<String> = self.c.smembers(&list_key)?;
 
         let mut items: Vec<UrlItem> = vec![];
@@ -118,6 +130,11 @@ impl Connection {
 
             items.push(item);
         }
+
+        tracing::event!(
+            Level::DEBUG,
+            items = serde_json::to_string(&items).unwrap_or("[]".to_string())
+        );
 
         Ok(items)
     }
